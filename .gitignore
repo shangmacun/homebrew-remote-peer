@@ -1,8 +1,8 @@
 data/rpeer1
-data/ca-tls-root-cert/*
-data/orderer-ca-tls-root-cert/*
-data/users/Org1OrgAdmin/msp/keystore/*
-data/users/Org1OrgAdmin/msp/signcerts/*
+data/ca-tls-root-cert/*.pem
+data/orderer-ca-tls-root-cert/*.pem
+data/users/Org1OrgAdmin/msp/keystore/key
+data/users/Org1OrgAdmin/msp/signcerts/*.pem
 fabric-ca-client-config.yaml
 downloaded/*
 bin/*
