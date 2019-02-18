@@ -60,8 +60,9 @@ In [deploy.sh](deploy.sh), [enroll.sh](enroll.sh) and [destroy.sh](destroy.sh) c
 
 You will require to place the following certificates (any filename is OK):
 
-* Peer Org's CA TLS Root Cert in [data/ca-tls-root-cert](data/ca-tls-root-cert)
+* Peer Org's CA TLS Cert in [data/ca-tls-cert](data/ca-tls-cert)
 * Orderer's CA TLS Root Cert in [data/orderer-ca-tls-root-cert](data/orderer-ca-tls-root-cert)
+* Peer Org TLS Root Cert in [data/peer-org-ca-tls-root-cert](data/peer-org-ca-tls-root-cert)
 * Peer Org Admin's Cert and Key in [data/users/$ORGADMIN_NAME/msp/signcerts](data/users/Org1OrgAdmin/msp/signcerts) and [data/users/$ORGADMIN_NAME/msp/keystore](data/users/Org1OrgAdmin/msp/keystore) respectively
 
 ## Deployment
@@ -100,7 +101,7 @@ This will remove the release and destroys all secrets in the `default` namespace
 ## Join Channel
 
 ```bash
-docker exec -it $POD bash
+kubectl exec -it $POD bash
 ```
 
 Retrieve Channel Genesis Block
@@ -122,9 +123,13 @@ CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer channel join -b /var/hyperledger/ch
 Install and Query Chaincode
 
 ```bash
+kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/
+kubectl exec -it $POD bash
+```
+
+```bash
 CHANNEL=channel1
 CHAINCODE=chaincode1
-kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/chaincode1\@1.cds
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL -n $CHAINCODE -c '{"Args":["query","a"]}'
 ```
@@ -142,6 +147,9 @@ CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls 
 
 ```bash
 configtxlator proto_decode --input channel1.block --type common.Block
+
+PEER_ORG_TLS_ROOT_CRT=$(ls data/peer-org-ca-tls-root-cert/*.pem)
+kubectl cp $PEER_ORG_TLS_ROOT_CRT $POD:/var/hyperledger
 
 CORE_PEER_ADDRESS=184.172.241.177:30901 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/peer-org-tls-ca.pem peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","13"]}'
 

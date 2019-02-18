@@ -9,7 +9,8 @@ CA_PASSWORD=${REMOTE_PEER_NAME}pw
 ORGADMIN_NAME=Org1OrgAdmin
 CA_HOSTNAME=184.172.241.177
 CA_PORT=30218
-CA_TLS_CRT=$(ls data/ca-tls-root-cert/*.pem)
+CA_TLS_CRT=$(ls data/ca-tls-cert/*.pem)
+PEER_ORG_TLS_ROOT_CRT=$(ls data/peer-org-ca-tls-root-cert/*.pem)
 
 export FABRIC_CA_CLIENT_HOME=${PWD}
 
@@ -18,11 +19,7 @@ rm -rf ${PWD}/data/${REMOTE_PEER_NAME}/tls
 
 mkdir -p ${PWD}/data/${REMOTE_PEER_NAME}/tls
 mkdir -p ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts
-
-fabric-ca-client getcainfo -d -u https://${CA_HOSTNAME}:${CA_PORT} -M ./tmp --tls.certfiles ${CA_TLS_CRT} 
-
-cp ./tmp/cacerts/* ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts
-rm -rf ./tmp
+cp $PEER_ORG_TLS_ROOT_CRT ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts
 
 fabric-ca-client enroll -u https://${CA_USERNAME}:${CA_PASSWORD}@${CA_HOSTNAME}:${CA_PORT} -M ./tmp --tls.certfiles ${CA_TLS_CRT}
 
@@ -35,7 +32,7 @@ fabric-ca-client enroll -d --enrollment.profile tls -u https://${CA_USERNAME}:${
 
 mv ./tmp/signcerts/cert.pem data/${REMOTE_PEER_NAME}/tls/server.pem
 mv ./tmp/keystore/* data/${REMOTE_PEER_NAME}/tls/server.key
-cp data/${REMOTE_PEER_NAME}/msp/tlscacerts/*.pem data/${REMOTE_PEER_NAME}/tls/ca.pem
+cp data/${REMOTE_PEER_NAME}/msp/cacerts/*.pem data/${REMOTE_PEER_NAME}/tls/ca.pem
 rm -rf ./tmp
 
 echo "Checking ${ORGADMIN_NAME} MSP.."
