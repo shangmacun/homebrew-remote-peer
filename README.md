@@ -61,7 +61,7 @@ In [deploy.sh](deploy.sh), [enroll.sh](enroll.sh) and [destroy.sh](destroy.sh) c
 You will require to place the following certificates (any filename is OK):
 
 * Peer Org's CA TLS Root Cert in [data/ca-tls-root-cert](data/ca-tls-root-cert)
-* Orderer's CA TLS Root Cert in [data/ca-tls-root-cert](data/ca-tls-root-cert)
+* Orderer's CA TLS Root Cert in [data/orderer-ca-tls-root-cert](data/orderer-ca-tls-root-cert)
 * Peer Org Admin's Cert and Key in [data/users/$ORGADMIN_NAME/msp/signcerts](data/users/Org1OrgAdmin/msp/signcerts) and [data/users/$ORGADMIN_NAME/msp/keystore](data/users/Org1OrgAdmin/msp/keystore) respectively
 
 ## Deployment
@@ -135,11 +135,14 @@ Invoke Chaincode
 ORDERER=184.172.241.177:30971 #Should change to your orderer address
 CHANNEL=channel1
 CHAINCODE=chaincode1
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNE -n $CHAINCODE -c '{"Args":["put","a","10"]}'
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","10"]}'
 ```
 
 ## Other useful command dumps
 
 ```bash
 configtxlator proto_decode --input channel1.block --type common.Block
+
+CORE_PEER_ADDRESS=184.172.241.177:30901 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/peer-org-tls-ca.pem peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","13"]}'
+
 ```
