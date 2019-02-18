@@ -52,6 +52,8 @@ In [deploy.sh](deploy.sh), [enroll.sh](enroll.sh) and [destroy.sh](destroy.sh) c
 * `REMOTE_PEER_NAME` - Self explanatory
 * `CA_USERNAME` - The username of the remote peer registered in Peer Org's CA
 * `CA_PASSWORD` - The password of the remote peer registered in Peer Org's CA
+* `TLSCA_USERNAME` - The username of the remote peer registered in Peer Org's TLS CA (Note that IBPv2 runs a separate TLS CA)
+* `TLSCA_PASSWORD` - The password of the remote peer registered in Peer Org's TLS CA
 * `ORGADMIN_NAME` - The name of the org admin
 * `CA_HOSTNAME` - Self explanatory
 * `CA_PORT` - Self explanatory
@@ -62,7 +64,6 @@ You will require to place the following certificates (any filename is OK):
 
 * Peer Org's CA TLS Cert in [data/ca-tls-cert](data/ca-tls-cert)
 * Orderer's CA TLS Root Cert in [data/orderer-ca-tls-root-cert](data/orderer-ca-tls-root-cert)
-* Peer Org TLS Root Cert in [data/peer-org-ca-tls-root-cert](data/peer-org-ca-tls-root-cert)
 * Peer Org Admin's Cert and Key in [data/users/$ORGADMIN_NAME/msp/signcerts](data/users/Org1OrgAdmin/msp/signcerts) and [data/users/$ORGADMIN_NAME/msp/keystore](data/users/Org1OrgAdmin/msp/keystore) respectively
 
 ## Deployment

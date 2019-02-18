@@ -44,6 +44,8 @@ data:
   CORE_PEER_GOSSIP_EXTERNALENDPOINT: {{ .Values.peer.gossip.externalEndpoint | quote }}
   CORE_PEER_GOSSIP_ORGLEADER: {{ .Values.peer.gossip.orgLeader | quote }}
   CORE_PEER_GOSSIP_USELEADERELECTION: {{ .Values.peer.gossip.useLeaderElection | quote }}
+  CORE_PEER_GOSSIP_DIALTIMEOUT: 10s
+  CORE_PEER_GOSSIP_CONNTIMEOUT: 10s
   ##########
   # TLS    #
   ##########
