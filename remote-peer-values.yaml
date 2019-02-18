@@ -59,6 +59,8 @@ secrets:
     key: hlf--rpeer1-idkey
     # CA Cert, saved under 'cacert.pem'
     caCert: hlf--rpeer1-cacert
+    # TLS CA Cert (Peer Org's TLS CA root cert), saved under 'tlscacert.pem'
+    tlsCaCert: hlf--rpeer1-tlscacert
     # # Intermediate CA Cert (optional), saved under 'intermediatecacert.pem'
     # intCaCert: hlf--rpeer1-caintcert
     # TLS secret, saved under keys 'tls.crt' and 'tls.key' (to conform with K8S nomenclature)

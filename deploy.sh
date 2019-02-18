@@ -18,6 +18,9 @@ kubectl create secret generic hlf--${REMOTE_PEER_NAME}-idkey --from-file=key=${K
 CACERT=$(ls ${PWD}/data/${REMOTE_PEER_NAME}/msp/cacerts/*.pem )
 kubectl create secret generic hlf--${REMOTE_PEER_NAME}-cacert --from-file=cacert.pem=${CACERT}
 
+TLSCACERT=$(ls ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts/*.pem )
+kubectl create secret generic hlf--${REMOTE_PEER_NAME}-tlscacert --from-file=tlscacert.pem=${TLSCACERT}
+
 ADMINCERT=$(ls ${PWD}/data/users/${ORGADMIN_NAME}/msp/signcerts/*.pem)
 kubectl create secret generic hlf--peer-admincert --from-file=${ADMINCERT}
 

@@ -45,6 +45,11 @@ spec:
           secret:
             secretName: {{ .Values.secrets.peer.caCert }}
         {{- end }}
+        {{- if .Values.secrets.peer.tlsCaCert }}
+        - name: tlscacert
+          secret:
+            secretName: {{ .Values.secrets.peer.tlsCaCert }}
+        {{- end }}
         {{- if .Values.secrets.peer.intCaCert }}
         - name: intcacert
           secret:
@@ -168,6 +173,10 @@ spec:
             {{- if .Values.secrets.peer.key }}
             - mountPath: /var/hyperledger/msp/keystore
               name: id-key
+            {{- end }}
+            {{- if .Values.secrets.peer.tlsCaCert }}
+            - mountPath: /var/hyperledger/msp/tlscacerts
+              name: tlscacert
             {{- end }}
             {{- if .Values.secrets.peer.caCert }}
             - mountPath: /var/hyperledger/msp/cacerts
