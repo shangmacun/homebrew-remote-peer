@@ -20,6 +20,7 @@ The above default settings can be changed by altering [remote-peer-values.yaml](
 You should have done the following:
 
 * Registered the remote peer to the Peer Org's CA (enrollment will be done via provided scripts)
+* Registered the remote peer to the Peer Org's TLS CA (Note that IBPv2 runs a separate TLS CA)
 * Created a channel, joined a peer to that channel, installed and instantiated a chaincode - [Sample Chaincode](chaincode/chaincode1@1.cds). IBPv2 accepts .cds chaincode files through its GUI.
 
 ### Kubernetes and Helm
@@ -52,7 +53,7 @@ In [deploy.sh](deploy.sh), [enroll.sh](enroll.sh) and [destroy.sh](destroy.sh) c
 * `REMOTE_PEER_NAME` - Self explanatory
 * `CA_USERNAME` - The username of the remote peer registered in Peer Org's CA
 * `CA_PASSWORD` - The password of the remote peer registered in Peer Org's CA
-* `TLSCA_USERNAME` - The username of the remote peer registered in Peer Org's TLS CA (Note that IBPv2 runs a separate TLS CA)
+* `TLSCA_USERNAME` - The username of the remote peer registered in Peer Org's TLS CA
 * `TLSCA_PASSWORD` - The password of the remote peer registered in Peer Org's TLS CA
 * `ORGADMIN_NAME` - The name of the org admin
 * `CA_HOSTNAME` - Self explanatory
