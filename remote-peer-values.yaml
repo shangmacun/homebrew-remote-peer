@@ -30,10 +30,12 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: ""
+  storageClass: "manual"
   accessMode: ReadWriteOnce
   size: 1Gi
   # existingClaim: ""
+  volume:
+    hostPath: /fabric-network/rpeer1
 
 ##################################
 ## Peer configuration options    #

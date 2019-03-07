@@ -38,6 +38,8 @@ spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}
   storageClassName: "{{ .Values.persistence.storageClass }}"
+{{- if .Values.persistence.volume.hostPath }}
   hostPath:
-    path: {{ .Values.persistence.volume.path | quote }}
+    path: {{ .Values.persistence.volume.hostPath | quote }}
+{{- end }}
 {{- end }}
