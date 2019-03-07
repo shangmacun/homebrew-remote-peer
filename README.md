@@ -103,7 +103,7 @@ This will remove the release and destroys all secrets in the `default` namespace
 ## Join Channel
 
 ```bash
-kubectl exec -it $POD bash
+kubectl exec -it $POD -c peer bash
 ```
 
 Retrieve Channel Genesis Block
@@ -125,8 +125,8 @@ CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer channel join -b /var/hyperledger/ch
 Install and Query Chaincode
 
 ```bash
-kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/
-kubectl exec -it $POD bash
+kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/ -c peer
+kubectl exec -it $POD -c peer bash
 ```
 
 ```bash

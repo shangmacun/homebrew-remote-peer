@@ -6,6 +6,9 @@ image:
   repository: hyperledger/fabric-peer
   tag: 1.4.0
   pullPolicy: IfNotPresent
+  dindImage: docker
+  dindTag: 18.05-dind
+
 
 service:
   # Cluster IP or LoadBalancer
