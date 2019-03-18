@@ -3,21 +3,22 @@
 set -e
 export PATH=${PWD}/bin:$PATH
 
-REMOTE_PEER_NAME=rpeer1
+REMOTE_PEER_NAME=rpeer2-aws
 CA_USERNAME=${REMOTE_PEER_NAME}
 CA_PASSWORD=${REMOTE_PEER_NAME}pw
 TLSCA_USERNAME=${REMOTE_PEER_NAME}tls
-TLSCA_PASSWORD=${REMOTE_PEER_NAME}tlspw
+TLSCA_PASSWORD=${TLSCA_USERNAME}pw
 ORGADMIN_NAME=Org1OrgAdmin
 CA_HOSTNAME=184.172.241.177
-CA_PORT=30218
-CA_TLS_CRT=$(ls data/ca-tls-cert/*.pem)
-#PEER_ORG_TLS_ROOT_CRT=$(ls data/peer-org-ca-tls-root-cert/*.pem)
+CA_PORT=30606
+CA_TLS_CRT=$(ls $PWD/data/ca-tls-cert/*.pem)
 
 export FABRIC_CA_CLIENT_HOME=${PWD}
 
 rm -rf ${PWD}/data/${REMOTE_PEER_NAME}/msp
 rm -rf ${PWD}/data/${REMOTE_PEER_NAME}/tls
+rm -rf ./tmpca
+rm -rf ./tmptlsca
 
 mkdir -p ${PWD}/data/${REMOTE_PEER_NAME}/tls
 
@@ -31,7 +32,7 @@ rm ${PWD}/data/${REMOTE_PEER_NAME}/msp/IssuerPublicKey
 rm ${PWD}/data/${REMOTE_PEER_NAME}/msp/IssuerRevocationPublicKey
 rm -rf ./tmpca
 
-fabric-ca-client enroll --caname tlsca -u https://${CA_USERNAME}:${CA_PASSWORD}@${CA_HOSTNAME}:${CA_PORT} --tls.certfiles $CA_TLS_CRT --csr.hosts ${REMOTE_PEER_NAME},${REMOTE_PEER_NAME}-hlf-peer -M ./tmptlsca
+fabric-ca-client enroll --caname tlsca -u https://${TLSCA_USERNAME}:${TLSCA_PASSWORD}@${CA_HOSTNAME}:${CA_PORT} --tls.certfiles $CA_TLS_CRT --csr.hosts ${REMOTE_PEER_NAME},${REMOTE_PEER_NAME}-hlf-peer,${REMOTE_PEER_NAME}.aldred.space -M ./tmptlsca
 
 mv ./tmptlsca/signcerts/cert.pem data/${REMOTE_PEER_NAME}/tls/server.pem
 mv ./tmptlsca/keystore/* data/${REMOTE_PEER_NAME}/tls/server.key

@@ -109,7 +109,7 @@ kubectl exec -it $POD -c peer bash
 Retrieve Channel Genesis Block
 
 ```bash
-ORDERER=184.172.241.177:30971 #Should change to your orderer address
+ORDERER=184.172.241.177:30755 #Should change to your orderer address
 CHANNEL=channel1
 peer channel fetch 0 /var/hyperledger/channel_genesis.pb -c $CHANNEL -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem
 ```
@@ -125,23 +125,23 @@ CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer channel join -b /var/hyperledger/ch
 Install and Query Chaincode
 
 ```bash
-kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/ -c peer
+kubectl cp ./chaincode/sample@1.cds ${POD}:/var/hyperledger/ -c peer
 kubectl exec -it $POD -c peer bash
 ```
 
 ```bash
 CHANNEL=channel1
-CHAINCODE=chaincode1
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/chaincode1\@1.cds
+CHAINCODE=sample
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/sample\@1.cds
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL -n $CHAINCODE -c '{"Args":["query","a"]}'
 ```
 
 Invoke Chaincode
 
 ```bash
-ORDERER=184.172.241.177:30971 #Should change to your orderer address
+ORDERER=184.172.241.177:30755 #Should change to your orderer address
 CHANNEL=channel1
-CHAINCODE=chaincode1
+CHAINCODE=sample
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","10"]}'
 ```
 
