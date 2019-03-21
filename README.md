@@ -78,7 +78,7 @@ In [bin](bin/) folder, place **fabric-ca-client** binary file (v1.4.0) as the sc
 
 ### Parameters to be altered
 
-In `values.sh`, change/alter the following as necessary:
+In `values.sh`, change/alter the following as necessary. You might want to download **Connection Profile** to assist in filling up some of the parameters
 
 * `REMOTE_PEER_NAME` - Self explanatory
 * `CA_USERNAME` - The username of the remote peer registered in the Org's CA

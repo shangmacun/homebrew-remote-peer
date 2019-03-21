@@ -7,8 +7,8 @@ export PATH=${PWD}/bin:$PATH
 
 export FABRIC_CA_CLIENT_HOME=${PWD}
 
-rm -rf ${PWD}/data/${REMOTE_PEER_NAME}/msp
-rm -rf ${PWD}/data/${REMOTE_PEER_NAME}/tls
+rm -rf ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp
+rm -rf ${PWD}/data/peers/${REMOTE_PEER_NAME}/tls
 rm -rf ./tmpca
 rm -rf ./tmptlsca
 
