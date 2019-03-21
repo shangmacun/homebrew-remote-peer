@@ -45,6 +45,6 @@ kubectl create secret generic hlf--${ORGMSP_ID}-tlsrootcert --from-file=cacert.p
 kubectl label secret hlf--${ORGMSP_ID}-tlsrootcert app=hlf-${REMOTE_PEER_NAME}
 
 echo "Generating values file.."
-sed -e "s/%REMOTE_PEER_NAME%/${REMOTE_PEER_NAME}/g" -e "s/%BOOTSTRAP_PEER%/${BOOTSTRAP_PEER}/g" -e "s/%ORGMSP_ID%/${ORGMSP_ID}/g" values.yaml.base > values.yaml
+sed -e "s/%REMOTE_PEER_NAME%/${REMOTE_PEER_NAME}/g" -e "s/%BOOTSTRAP_PEER%/${BOOTSTRAP_PEER}/g" -e "s/%ORGMSP_ID%/${ORGMSP_ID}/g" -e "s/%ORDERER%/${ORDERER}/g" -e "s/%CHANNEL%/${CHANNEL}/g" values.yaml.base > values.yaml
 
 helm install ./hlf-peer -n ${REMOTE_PEER_NAME} -f values.yaml

@@ -91,6 +91,7 @@ In `values.sh`, change/alter the following as necessary. You might want to downl
 * `CA_PORT` - Self explanatory
 * `BOOTSTRAP_PEER` - Peer to connect to receive gossip messages
 * `ORDERER` - Orderer Address
+* `CHANNEL` - Channel Name
 
 ## Deployment
 
@@ -134,15 +135,19 @@ kubectl exec -it $POD -c peer bash
 Retrieve Channel Genesis Block
 
 ```bash
-ORDERER=184.172.241.177:30755 #Should change to your orderer address
-CHANNEL=channel1
-peer channel fetch 0 /var/hyperledger/channel_genesis.pb -c $CHANNEL -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem
+peer channel fetch 0 /var/hyperledger/channel_genesis.pb -c $CHANNEL_NAME -o $ORDERER_ADDRESS --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem
 ```
 
 Join Channel
 
 ```bash
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer channel join -b /var/hyperledger/channel_genesis.pb
+```
+
+Exit
+
+```bash
+exit
 ```
 
 ## Chaincode Operations
@@ -155,29 +160,16 @@ kubectl exec -it $POD -c peer bash
 ```
 
 ```bash
-CHANNEL=channel1
 CHAINCODE=sample
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/sample\@1.cds
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL -n $CHAINCODE -c '{"Args":["query","a"]}'
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["query","a"]}'
 ```
 
 Invoke Chaincode
 
 ```bash
-ORDERER=184.172.241.177:30755 #Should change to your orderer address
-CHANNEL=channel1
 CHAINCODE=sample
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","10"]}'
-```
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","10"]}'
 
-## Other useful command dumps
-
-```bash
-configtxlator proto_decode --input channel1.block --type common.Block
-
-PEER_ORG_TLS_ROOT_CRT=$(ls data/peer-org-ca-tls-root-cert/*.pem)
-kubectl cp $PEER_ORG_TLS_ROOT_CRT $POD:/var/hyperledger
-
-CORE_PEER_ADDRESS=184.172.241.177:30901 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/peer-org-tls-ca.pem peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","13"]}'
-
+CORE_PEER_ADDRESS=$CORE_PEER_GOSSIP_BOOTSTRAP CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile $ORD_TLS_PATH/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","13"]}'
 ```

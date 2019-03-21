@@ -51,6 +51,10 @@ peer:
       enabled: "false"
   gossip:
     bootstrap: %BOOTSTRAP_PEER%
+  orderer: 
+    address: %ORDERER%
+  channel:
+    name: %CHANNEL%
 
 # Secrets references, empty by default, fill in with your secrets (particularly adminCert) or add Peer Admin certificate manually after launching chart.
 secrets:
