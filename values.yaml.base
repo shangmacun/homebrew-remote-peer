@@ -35,7 +35,7 @@ persistence:
   size: 1Gi
   # existingClaim: ""
   volume:
-    hostPath: /fabric-network/rpeer1
+    hostPath: /fabric-network/%REMOTE_PEER_NAME%
 
 ##################################
 ## Peer configuration options    #
@@ -50,43 +50,47 @@ peer:
     client:
       enabled: "false"
   gossip:
-    bootstrap: 184.172.241.177:30901
+    bootstrap: %BOOTSTRAP_PEER%
+  orderer: 
+    address: %ORDERER%
+  channel:
+    name: %CHANNEL%
 
 # Secrets references, empty by default, fill in with your secrets (particularly adminCert) or add Peer Admin certificate manually after launching chart.
 secrets:
   ## These secrets should contain the Orderer crypto materials and credentials
   peer:
     # Credentials, saved under keys 'CA_USERNAME' and 'CA_PASSWORD'
-    cred: hlf--rpeer1-cred
+    cred: hlf--%REMOTE_PEER_NAME%-cred
     # Certificate, saved under key 'cert.pem'
-    cert: hlf--rpeer1-idcert
+    cert: hlf--%REMOTE_PEER_NAME%-idcert
     # Key, saved under 'key.pem'
-    key: hlf--rpeer1-idkey
+    key: hlf--%REMOTE_PEER_NAME%-idkey
     # CA Cert, saved under 'cacert.pem'
-    caCert: hlf--rpeer1-cacert
+    caCert: hlf--%REMOTE_PEER_NAME%-cacert
     # TLS CA Cert (Peer Org's TLS CA root cert), saved under 'tlscacert.pem'
-    tlsCaCert: hlf--rpeer1-tlscacert
+    tlsCaCert: hlf--%REMOTE_PEER_NAME%-tlscacert
     # # Intermediate CA Cert (optional), saved under 'intermediatecacert.pem'
-    # intCaCert: hlf--rpeer1-caintcert
+    # intCaCert: hlf--%REMOTE_PEER_NAME%-caintcert
     # TLS secret, saved under keys 'tls.crt' and 'tls.key' (to conform with K8S nomenclature)
-    tls: hlf--rpeer1-tls
+    tls: hlf--%REMOTE_PEER_NAME%-tls
     # TLS root CA certificate saved under key 'cacert.pem'
-    tlsRootCert: hlf--peer-tlsrootcert
+    tlsRootCert: hlf--%ORGMSP_ID%-tlsrootcert
     # TLS client root CA certificates saved under any names (as there may be multiple)
-    #tlsClient: hlf--rpeer1-tls
+    #tlsClient: hlf--%REMOTE_PEER_NAME%-tls
     # # TLS client root CA certificates saved under any names (as there may be multiple)
-    # tlsClientRootCerts: hlf--ord-tlsrootcert
+    # tlsClientRootCerts: hlf--%ORGMSP_ID%-ord-tlsrootcert
   ## This should contain "channel" transaction derived from a configtx.yaml
   ## configtxgen -profile ComposerChannel -channelID composerchannel -outputCreateChannelTx composerchannel.tx
   # channel: hlf--channel
   # This should contain the Certificate of the Peer Organisation admin
   # This is necessary to successfully run the peer
-  adminCert: hlf--peer-admincert
+  adminCert: hlf--%ORGMSP_ID%-admincert
   # This should contain the Private Key of the Peer Organisation admin
   # This is necessary to successfully join a channel
-  adminKey: hlf--peer-adminkey
+  adminKey: hlf--%ORGMSP_ID%-adminkey
   # This should include the Orderer TLS 'cacert.pem'
-  ordTlsRootCert: hlf--ord-tlsrootcert
+  ordTlsRootCert: hlf--%ORGMSP_ID%-ord-tlsrootcert
 
 resources: {}
   ## We usually recommend not to specify default resources and to leave this as a conscious

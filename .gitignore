@@ -1,11 +1,12 @@
-data/rpeer1
+data/peers
 data/ca-tls-cert/*.pem
 data/orderer-ca-tls-root-cert/*.pem
 data/peer-org-ca-tls-root-cert/*.pem
-data/users/Org1OrgAdmin/msp/keystore/key
-data/users/Org1OrgAdmin/msp/signcerts/*.pem
+data/users/OrgAdmin/msp/keystore/key
+data/users/OrgAdmin/msp/signcerts/*.pem
 fabric-ca-client-config.yaml
 downloaded/*
 bin/*
 .DS_Store
 tmp/
+values.yaml

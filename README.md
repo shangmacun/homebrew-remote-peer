@@ -2,26 +2,7 @@
 
 This will deploy a remote peer in your K8S cluster, connecting to the main blockchain network.
 
-## Defaults
-
-* Remote Peer Name: **rpeer1** - You can change by browsing through the scripts and change REMOTE_PEER_NAME parameter
-* Hyperledger Fabric Version: `1.4.0` - In conformance to the HF version of IBM Blockchain Platform v2.0
-* Default Service Type: `NodePort` - So that it can be deployed into free clusters or Minikube
-* MSP Name: org1msp
-* Peer Org Admin Name: **Org1OrgAdmin** - You can change by browsing through the scripts and change ORGADMIN_NAME parameter
-* Channel Name: channel1
-
-The above default settings can be changed by altering [remote-peer-values.yaml](remote-peer-values.yaml) file
-
 ## Prerequisities
-
-### Main Blockchain network
-
-You should have done the following:
-
-* Registered the remote peer to the Peer Org's CA (enrollment will be done via provided scripts)
-* Registered the remote peer to the Peer Org's TLS CA (Note that IBPv2 runs a separate TLS CA)
-* Created a channel, joined a peer to that channel, installed and instantiated a chaincode - [Sample Chaincode](chaincode/chaincode1@1.cds). IBPv2 accepts .cds chaincode files through its GUI.
 
 ### Kubernetes and Helm
 
@@ -30,6 +11,57 @@ You should have a K8S cluster (obviously). Install Helm in your local machine an
 ```bash
 helm init
 ```
+
+### IBPv2 Fabric network
+
+1. Register the remote peer to the Peer Org's CA (enrollment will be done via provided scripts)
+
+2. Register the remote peer to the Peer Org's TLS CA (Note that IBPv2 runs a separate TLS CA)
+  
+3. Create a channel (**channel1**), join a peer to that channel, installed and instantiated a chaincode - [Sample Chaincode](chaincode/sample@1.cds). IBPv2 accepts .cds chaincode files through its GUI.
+
+4. Download **CA TLS cert** by following these instructions:
+   1. In IBPv2 console, go to **Certificate Authority settings**
+   2. Copy the contents in **TLS Certificate** field
+   3. Issue the commands
+
+      ```bash
+      export TLS=<paste the contents here>
+      mkdir -p ./tmp
+      echo $TLS > ./tmp/ca-tls
+      base64 --decode ./tmp/ca-tls > ./data/ca-tls-cert/ca-tls.pem
+      ```
+
+5. Download **Orderer TLS root cert** by following these instructions:
+   1. In IBPv2 console, go to **Orderer settings**
+   2. Copy the contents in **TLS Certificate** field
+   3. Issue the commands
+
+      ```bash
+      export TLS=<paste the contents here>
+      echo $TLS > ./tmp/orderer-ca-tls-root-cert
+      base64 --decode ./tmp/orderer-ca-tls-root-cert > ./data/orderer-ca-tls-root-cert/orderer-ca-tls-root-cert.pem
+      ```
+
+6. Download **Org Admin** identity by following these instructions:
+   1. In IBPv2 console, go to **Wallet** and choose the Org Admin
+   2. Copy the contents in **Certificate** field
+   3. Issue the commands
+
+      ```bash
+      export CERT=<paste the contents here>
+      echo $CERT > ./tmp/admincert
+      base64 --decode ./tmp/admincert > ./data/users/OrgAdmin/msp/signcerts/cert.pem
+      ```
+
+   4. Copy the contents in **Private Key** field
+   5. Issue the commands
+
+      ```bash
+      export KEY=<paste the contents here>
+      echo $KEY > ./tmp/adminkey
+      base64 --decode ./tmp/adminkey > ./data/users/OrgAdmin/msp/keystore/key
+      ```
 
 ### Minikube Hairpin Mode
 
@@ -46,32 +78,26 @@ In [bin](bin/) folder, place **fabric-ca-client** binary file (v1.4.0) as the sc
 
 ### Parameters to be altered
 
-In [remote-peer-values.yaml](remote-peer-values.yaml), change value of `peer.gossip.bootstrap` to a Peer address in the main blockchain network (should be same organization)
-
-In [deploy.sh](deploy.sh), [enroll.sh](enroll.sh) and [destroy.sh](destroy.sh) change values of:
+In `values.sh`, change/alter the following as necessary. You might want to download **Connection Profile** to assist in filling up some of the parameters
 
 * `REMOTE_PEER_NAME` - Self explanatory
-* `CA_USERNAME` - The username of the remote peer registered in Peer Org's CA
-* `CA_PASSWORD` - The password of the remote peer registered in Peer Org's CA
-* `TLSCA_USERNAME` - The username of the remote peer registered in Peer Org's TLS CA
-* `TLSCA_PASSWORD` - The password of the remote peer registered in Peer Org's TLS CA
-* `ORGADMIN_NAME` - The name of the org admin
+* `CA_USERNAME` - The username of the remote peer registered in the Org's CA
+* `CA_PASSWORD` - The password of the remote peer registered in the Org's CA
+* `TLSCA_USERNAME` - The username of the remote peer registered in the Org's TLS CA
+* `TLSCA_PASSWORD` - The password of the remote peer registered in the Org's TLS CA
+* `ORGADMIN_NAME` - The name of the org admin (leave it as **OrgAdmin**)
+* `ORGMSP_ID` - Org MSP ID
 * `CA_HOSTNAME` - Self explanatory
 * `CA_PORT` - Self explanatory
-
-### Certificates
-
-You will require to place the following certificates (any filename is OK):
-
-* Peer Org's CA TLS Cert in [data/ca-tls-cert](data/ca-tls-cert)
-* Orderer's CA TLS Root Cert in [data/orderer-ca-tls-root-cert](data/orderer-ca-tls-root-cert)
-* Peer Org Admin's Cert and Key in [data/users/$ORGADMIN_NAME/msp/signcerts](data/users/Org1OrgAdmin/msp/signcerts) and [data/users/$ORGADMIN_NAME/msp/keystore](data/users/Org1OrgAdmin/msp/keystore) respectively
+* `BOOTSTRAP_PEER` - Peer to connect to receive gossip messages
+* `ORDERER` - Orderer Address
+* `CHANNEL` - Channel Name
 
 ## Deployment
 
 ### Enrolling Remote Peer
 
-Provided that you met the prerequisites above, run:
+Provided that you met all the prerequisites above, run:
 
 ```bash
 ./enroll.sh
@@ -88,7 +114,7 @@ This will create secrets based on the certificates provided and deploy a helm ch
 Once deployment is done, get the pod's name:
 
 ```bash
-REMOTE_PEER_NAME=rpeer1
+source values.sh
 POD=$(kubectl get pods -l "app=hlf-peer,release=${REMOTE_PEER_NAME}" -o jsonpath="{.items[0].metadata.name}")
 ```
 
@@ -109,9 +135,7 @@ kubectl exec -it $POD -c peer bash
 Retrieve Channel Genesis Block
 
 ```bash
-ORDERER=184.172.241.177:30971 #Should change to your orderer address
-CHANNEL=channel1
-peer channel fetch 0 /var/hyperledger/channel_genesis.pb -c $CHANNEL -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem
+peer channel fetch 0 /var/hyperledger/channel_genesis.pb -c $CHANNEL_NAME -o $ORDERER_ADDRESS --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem
 ```
 
 Join Channel
@@ -120,39 +144,32 @@ Join Channel
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer channel join -b /var/hyperledger/channel_genesis.pb
 ```
 
+Exit
+
+```bash
+exit
+```
+
 ## Chaincode Operations
 
 Install and Query Chaincode
 
 ```bash
-kubectl cp ./chaincode/chaincode1@1.cds ${POD}:/var/hyperledger/ -c peer
+kubectl cp ./chaincode/sample@1.cds ${POD}:/var/hyperledger/ -c peer
 kubectl exec -it $POD -c peer bash
 ```
 
 ```bash
-CHANNEL=channel1
-CHAINCODE=chaincode1
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/chaincode1\@1.cds
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL -n $CHAINCODE -c '{"Args":["query","a"]}'
+CHAINCODE=sample
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode install /var/hyperledger/sample\@1.cds
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode query -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["query","a"]}'
 ```
 
 Invoke Chaincode
 
 ```bash
-ORDERER=184.172.241.177:30971 #Should change to your orderer address
-CHANNEL=channel1
-CHAINCODE=chaincode1
-CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","10"]}'
-```
+CHAINCODE=sample
+CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","10"]}'
 
-## Other useful command dumps
-
-```bash
-configtxlator proto_decode --input channel1.block --type common.Block
-
-PEER_ORG_TLS_ROOT_CRT=$(ls data/peer-org-ca-tls-root-cert/*.pem)
-kubectl cp $PEER_ORG_TLS_ROOT_CRT $POD:/var/hyperledger
-
-CORE_PEER_ADDRESS=184.172.241.177:30901 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/peer-org-tls-ca.pem peer chaincode invoke -o $ORDERER --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL -n $CHAINCODE -c '{"Args":["put","a","13"]}'
-
+CORE_PEER_ADDRESS=$CORE_PEER_GOSSIP_BOOTSTRAP CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile $ORD_TLS_PATH/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","13"]}'
 ```

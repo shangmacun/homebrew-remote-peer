@@ -71,3 +71,5 @@ data:
   GODEBUG: "netdns=go"
   ADMIN_MSP_PATH: /var/hyperledger/admin_msp
   ORD_TLS_PATH: /var/hyperledger/tls/ord/cert
+  ORDERER_ADDRESS: {{ .Values.peer.orderer.address }}
+  CHANNEL_NAME: {{ .Values.peer.channel.name }}
