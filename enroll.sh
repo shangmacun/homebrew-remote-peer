@@ -1,17 +1,9 @@
 #/bin/bash
 
 set -e
-export PATH=${PWD}/bin:$PATH
+source values.sh
 
-REMOTE_PEER_NAME=rpeer2-aws
-CA_USERNAME=${REMOTE_PEER_NAME}
-CA_PASSWORD=${REMOTE_PEER_NAME}pw
-TLSCA_USERNAME=${REMOTE_PEER_NAME}tls
-TLSCA_PASSWORD=${TLSCA_USERNAME}pw
-ORGADMIN_NAME=Org1OrgAdmin
-CA_HOSTNAME=184.172.241.177
-CA_PORT=30606
-CA_TLS_CRT=$(ls $PWD/data/ca-tls-cert/*.pem)
+export PATH=${PWD}/bin:$PATH
 
 export FABRIC_CA_CLIENT_HOME=${PWD}
 

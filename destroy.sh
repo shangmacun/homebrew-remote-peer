@@ -1,6 +1,6 @@
 #/bin/bash
 
-REMOTE_PEER_NAME=rpeer1-ibmcloud
+source values.sh
 
 helm delete --purge ${REMOTE_PEER_NAME}
 
