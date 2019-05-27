@@ -4,6 +4,15 @@ This will deploy a remote peer in your K8S cluster, connecting to the main block
 
 ## Prerequisities
 
+### HF binaries
+
+Download binaries for Hyperledger Fabric v1.4.1
+
+```bash
+curl -sSL http://bit.ly/2ysbOFE | bash -s -- 1.4.1 -d -s
+rm -f config/configtx.yaml config/core.yaml config/orderer.yaml
+```
+
 ### Kubernetes and Helm
 
 You should have a K8S cluster (obviously). Install Helm in your local machine and Tiller in the K8S
