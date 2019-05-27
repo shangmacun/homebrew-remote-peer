@@ -12,23 +12,23 @@ rm -rf ${PWD}/data/peers/${REMOTE_PEER_NAME}/tls
 rm -rf ./tmpca
 rm -rf ./tmptlsca
 
-mkdir -p ${PWD}/data/${REMOTE_PEER_NAME}/tls
+mkdir -p ${PWD}/data/peers/${REMOTE_PEER_NAME}/tls
 
 fabric-ca-client enroll --caname ca -u https://${CA_USERNAME}:${CA_PASSWORD}@${CA_HOSTNAME}:${CA_PORT} -M ./tmpca --tls.certfiles ${CA_TLS_CRT}
 
-cp -r ./tmpca/ ${PWD}/data/${REMOTE_PEER_NAME}/msp/
-mkdir -p ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts
-cp ${PWD}/data/${REMOTE_PEER_NAME}/msp/cacerts/*.pem ${PWD}/data/${REMOTE_PEER_NAME}/msp/tlscacerts
+cp -r ./tmpca/ ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/
+mkdir -p ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/tlscacerts
+cp ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/cacerts/*.pem ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/tlscacerts
 
-rm ${PWD}/data/${REMOTE_PEER_NAME}/msp/IssuerPublicKey
-rm ${PWD}/data/${REMOTE_PEER_NAME}/msp/IssuerRevocationPublicKey
+rm ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/IssuerPublicKey
+rm ${PWD}/data/peers/${REMOTE_PEER_NAME}/msp/IssuerRevocationPublicKey
 rm -rf ./tmpca
 
 fabric-ca-client enroll --caname tlsca -u https://${TLSCA_USERNAME}:${TLSCA_PASSWORD}@${CA_HOSTNAME}:${CA_PORT} --tls.certfiles $CA_TLS_CRT --csr.hosts ${REMOTE_PEER_NAME},${REMOTE_PEER_NAME}-hlf-peer,${REMOTE_PEER_NAME}.aldred.space -M ./tmptlsca
 
-mv ./tmptlsca/signcerts/cert.pem data/${REMOTE_PEER_NAME}/tls/server.pem
-mv ./tmptlsca/keystore/* data/${REMOTE_PEER_NAME}/tls/server.key
-mv ./tmptlsca/cacerts/*.pem data/${REMOTE_PEER_NAME}/tls/ca.pem
+mv ./tmptlsca/signcerts/cert.pem data/peers/${REMOTE_PEER_NAME}/tls/server.pem
+mv ./tmptlsca/keystore/* data/peers/${REMOTE_PEER_NAME}/tls/server.key
+mv ./tmptlsca/cacerts/*.pem data/peers/${REMOTE_PEER_NAME}/tls/ca.pem
 rm -rf ./tmptlsca
 
 echo "Checking ${ORGADMIN_NAME} MSP.."

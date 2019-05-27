@@ -1,5 +1,6 @@
 #/bin/bash
 
+set -e
 source values.sh
 
 echo "Creating k8s secrets.."

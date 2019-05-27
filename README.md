@@ -19,7 +19,10 @@ You should have a K8S cluster (obviously). Install Helm in your local machine an
 
 ```bash
 helm init
+helm version
 ```
+
+If you see `Error: could not find a ready tiller pod`, wait for a while and try again
 
 ### IBPv2 Fabric network
 
@@ -89,7 +92,7 @@ In [bin](bin/) folder, check if you have `fabric-ca-client`
 
 In `values.sh`, change/alter the following as necessary. You might want to download **Connection Profile** to assist in filling up some of the parameters
 
-* `REMOTE_PEER_NAME` - Self explanatory
+* `REMOTE_PEER_NAME` - Same as the peer's enrollment ID
 * `CA_USERNAME` - The username of the remote peer registered in the Org's CA
 * `CA_PASSWORD` - The password of the remote peer registered in the Org's CA
 * `TLSCA_USERNAME` - The username of the remote peer registered in the Org's TLS CA
@@ -120,19 +123,17 @@ This will create secrets based on the certificates provided and deploy a helm ch
 ./deploy.sh
 ```
 
+Make sure that peer is running:
+
+```bash
+kubectl get pod
+```
+
 Once deployment is done, get the pod's name:
 
 ```bash
 source values.sh
 POD=$(kubectl get pods -l "app=hlf-peer,release=${REMOTE_PEER_NAME}" -o jsonpath="{.items[0].metadata.name}")
-```
-
-### Destroy
-
-This will remove the release and destroys all secrets in the `default` namespace
-
-```bash
-./destroy.sh
 ```
 
 ## Join Channel
@@ -181,4 +182,12 @@ CHAINCODE=sample
 CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile /var/hyperledger/tls/ord/cert/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","10"]}'
 
 CORE_PEER_ADDRESS=$CORE_PEER_GOSSIP_BOOTSTRAP CORE_PEER_MSPCONFIGPATH=$ADMIN_MSP_PATH peer chaincode invoke -o $ORDERER_ADDRESS --tls --cafile $ORD_TLS_PATH/orderer-ca-tls-root-cert.pem -C $CHANNEL_NAME -n $CHAINCODE -c '{"Args":["put","a","13"]}'
+```
+
+## Destroy
+
+This will remove the release and destroys all secrets in the `default` namespace
+
+```bash
+./destroy.sh
 ```
