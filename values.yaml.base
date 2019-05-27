@@ -4,7 +4,7 @@
 
 image:
   repository: hyperledger/fabric-peer
-  tag: 1.4.0
+  tag: 1.4.1
   pullPolicy: IfNotPresent
   dindImage: docker
   dindTag: 18.05-dind

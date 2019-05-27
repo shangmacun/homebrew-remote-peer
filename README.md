@@ -83,7 +83,7 @@ sudo ip link set docker0 promisc on
 
 ### fabric-ca-client
 
-In [bin](bin/) folder, place **fabric-ca-client** binary file (v1.4.0) as the script will perform enrollment
+In [bin](bin/) folder, check if you have `fabric-ca-client`
 
 ### Parameters to be altered
 
