@@ -41,7 +41,7 @@ persistence:
 ## Peer configuration options    #
 ##################################
 peer:
-  mspID: org1msp
+  mspID: %ORGMSP_ID%
   # Type of database ("goleveldb" or "CouchDB"):
   databaseType: goleveldb
   tls:
